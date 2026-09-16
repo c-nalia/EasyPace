@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EasyPace</string>
+    <string name="notif_channel_name">Monitor de corrida</string>
+    <string name="notif_channel_desc">Mantem o EasyPace medindo o pace com a tela apagada.</string>
+</resources>

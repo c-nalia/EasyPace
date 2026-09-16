@@ -1,2 +1,35 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# ============================================================================
+#  FINAIS DE LINHA
+# ----------------------------------------------------------------------------
+#  Sem este arquivo, um clone feito em outra maquina (ou com outra config de
+#  Git) pode trocar os finais de linha e QUEBRAR os scripts:
+#
+#    * um .bat com finais LF faz o cmd.exe do Windows engasgar;
+#    * o gradlew (shell) com finais CRLF nao roda no Linux/macOS.
+#
+#  Aqui a gente fixa o que cada um precisa, independente de quem clonar.
+# ============================================================================
+
+# Padrao: o Git guarda tudo com LF e converte na hora de gravar em disco.
+* text=auto eol=lf
+
+# Scripts do Windows PRECISAM de CRLF.
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# Scripts de shell PRECISAM de LF.
+gradlew text eol=lf
+*.sh    text eol=lf
+
+# Binarios: nunca converter nada.
+*.jar      binary
+*.apk      binary
+*.aab      binary
+*.jks      binary
+*.keystore binary
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.webp     binary
+*.ttf      binary
+*.otf      binary

@@ -1,0 +1,55 @@
+# ============================================================================
+#  O QUE NUNCA VAI PARA O GITHUB
+# ----------------------------------------------------------------------------
+#  Regra de ouro: o Git so precisa do CODIGO-FONTE. Tudo que e gerado,
+#  baixado ou pessoal fica de fora.
+#
+#  ATENCAO: o .gitignore so protege arquivos que ainda NAO foram commitados.
+#  Se um segredo entrar no historico, apagar o arquivo depois nao resolve -
+#  ele continua acessivel em commits antigos. Por isso a lista abaixo e
+#  deliberadamente ampla.
+# ============================================================================
+
+# --- SEGREDOS -- se algo daqui vazar, gere uma chave nova --------------------
+# A chave de assinatura E a identidade do seu app. Quem tiver ela pode
+# publicar atualizacoes que o Android vai aceitar como se fossem suas.
+*.jks
+*.keystore
+*.p12
+keystore.properties
+
+# --- Caminhos e config da sua maquina ---------------------------------------
+# local.properties guarda o caminho do SDK, com o seu nome de usuario dentro.
+local.properties
+
+# --- Saidas de build ---------------------------------------------------------
+/build/
+/app/build/
+/dist/
+/captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.aar
+*.ap_
+*.dex
+
+# --- Caches de ferramentas ---------------------------------------------------
+.gradle/
+.kotlin/
+# JDK que o build.bat baixa (~330 MB)
+/tools/
+
+# --- IDE ---------------------------------------------------------------------
+/.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# --- Sistema operacional -----------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
