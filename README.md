@@ -1,146 +1,130 @@
-# EasyPace — treinador de pace com estética Codec
+<div align="center">
 
-Aplicativo Android pessoal que ouve os sensores do celular durante a corrida e
-avisa **pelo fone**, sem você precisar olhar a tela:
+# EasyPace
 
-| situação | som | quando |
+**Treinador de pace que fala pelo fone — com a estética do codec de Metal Gear Solid.**
+
+Você define um ritmo. O app ouve os sensores e avisa por bipes quando você
+acelera, quando cai, e quando está no ponto. Sem tirar o celular do bolso.
+
+[![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](#)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin&logoColor=white)](#)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-2024.10-4285F4?logo=jetpackcompose&logoColor=white)](#)
+[![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-7DF9A6)](LICENSE)
+
+<img src="docs/screenshot.png" width="300" alt="Tela do EasyPace: painel de codec verde com o pace atual em destaque">
+
+</div>
+
+## Os três sons
+
+| situação | som | cadência |
 |---|---|---|
-| pace **acima** da meta (você acelerou) | bipe **agudo** duplo, subindo | ao entrar no estado e a cada 4 s |
-| pace **estável** dentro da tolerância | **chamada de codec** (dois toques, duas vezes) | ao entrar no estado e a cada **10 s** |
-| pace **abaixo** da meta (você caiu de ritmo) | bipe **grave** descendo | ao entrar no estado e a cada 4 s |
+| **acima** da meta — você acelerou | bipe agudo duplo, subindo | ao entrar, e a cada 4 s |
+| **dentro** da tolerância | chamada de codec: dois toques, duas vezes | ao entrar, e a cada **10 s** |
+| **abaixo** da meta — o ritmo caiu | bipe grave, descendo | ao entrar, e a cada 4 s |
 
-> O mapeamento agudo/grave pode ser invertido em **AJUSTES → inverter agudo/grave**,
-> sem recompilar.
+Nenhum arquivo de áudio: os bipes são sintetizados em tempo real com
+`AudioTrack`, o que deixa o APK pequeno e a latência mínima. Saem no canal de
+**mídia**, então tocam por cima da sua música e não são cortados pelo Não
+Perturbe.
 
----
+> Prefere o contrário? **AJUSTES → inverter agudo/grave**, sem recompilar.
 
-## Como gerar o APK
+## Instalar
 
-Pré-requisito: **Android Studio instalado** (ele já traz o JDK e o SDK).
-Abra o Prompt de Comando nesta pasta.
+Ainda não há release publicado — compile você mesmo. Precisa do **Android
+Studio** instalado (ele traz o JDK e o SDK). No Prompt de Comando, dentro da
+pasta do projeto:
 
-**Você NÃO precisa de depuração USB.** Ela só serve para o comando `install`.
-
-Na primeira vez, duas linhas:
-
-```
-build.bat keystore     cria a sua chave de assinatura (pede uma senha)
-build.bat apk          gera o APK final assinado em dist\
-```
-
-Se aparecer `[X] Nenhum JDK compatível encontrado`, rode antes:
-
-```
-build.bat jdk          baixa um JDK 21 para tools\jdk21 (~190 MB, uma vez)
+```bat
+build.bat keystore    :: cria sua chave de assinatura (uma vez só)
+build.bat apk         :: gera o APK assinado em dist\
 ```
 
-Isso acontece quando o Java que vem dentro do Android Studio é mais novo que
-o **Java 23** — o Gradle 8.11 e o plugin Android 8.7 usados aqui não
-reconhecem versões acima disso, e o build morre com uma mensagem que é só o
-número da versão (por exemplo `25.0.2`). O `build.bat jdk` resolve instalando
-um JDK 21 dentro da pasta do projeto, sem tocar no Android Studio nem no Java
-do sistema.
+Copie o `.apk` para o celular e toque nele. **Depuração USB não é necessária.**
 
-Nas próximas versões:
+<details>
+<summary><b>Instalar no celular sem cabo de depuração</b></summary>
 
-```
-build.bat bump         soma 1 no versionCode
-build.bat apk          gera o novo APK
-```
-
-Outros comandos:
-
-```
-build.bat              APK de teste (debug), sem precisar de chave
-build.bat test         roda os testes automatizados
-build.bat lint         análise estática do Android
-build.bat clean        limpa
-build.bat install      instala pelo cabo (esse sim precisa de depuração USB)
-build.bat help         ajuda
-```
-
-O `build.bat` acha sozinho o JDK do Android Studio e o Android SDK, escreve o
-`local.properties`, baixa o `gradle-wrapper.jar` se faltar, e copia o APK
-pronto para `dist\` com a versão e a data no nome.
-
-### Instalando no celular sem cabo de depuração
-
-1. Leve o `.apk` de `dist\` para o celular — cabo USB no modo "Transferência
-   de arquivos", Google Drive, WhatsApp para você mesmo, e-mail, tanto faz.
+1. Leve o `.apk` de `dist\` para o celular — cabo USB no modo "Transferência de
+   arquivos", Google Drive, WhatsApp para você mesmo, e-mail, tanto faz.
 2. No celular, abra o arquivo (em Downloads ou Meus Arquivos).
 3. O Android avisa que a fonte é desconhecida: toque em **Configurações** e
-   permita a instalação para o app que abriu o APK (Arquivos, Chrome,
-   WhatsApp...). Isso é por app, e você faz uma vez só.
+   permita a instalação para o app que abriu o APK. É por app, e só uma vez.
 4. Toque em **Instalar**. Se o Play Protect reclamar, escolha **Instalar mesmo
    assim** — o aviso aparece só porque o app não veio da Play Store.
 
-### Sobre a chave de assinatura
+</details>
 
-> **Nunca versione a chave.** `easypace.jks` e `keystore.properties` estão no
-> `.gitignore`, e é assim que tem de ficar. A chave de assinatura *é* a
-> identidade do app: quem tiver ela pode publicar atualizações que o Android
-> aceita como se fossem suas. Se ela vazar num commit, apagar o arquivo depois
-> não resolve — o conteúdo continua acessível no histórico, e o certo é gerar
-> uma chave nova.
+<details>
+<summary><b>Deu <code>[X] Nenhum JDK compatível encontrado</code>?</b></summary>
 
+```bat
+build.bat jdk         :: baixa um JDK 21 para tools\jdk21 (~190 MB, uma vez)
+```
 
-`build.bat keystore` cria `easypace.jks` na pasta do projeto, válido por 27
-anos. **Guarde esse arquivo e a senha.** É ele que permite *atualizar* o app
-instalado: se você perder a chave, as versões futuras só entram desinstalando
-a antiga primeiro. Ele já está no `.gitignore` — nunca suba essa chave para
-lugar nenhum.
+Isso acontece quando o Java que vem dentro do Android Studio é mais novo que o
+**Java 23**. O Gradle 8.11 e o plugin Android 8.7 usados aqui não reconhecem
+versões acima disso, e o build morre com uma mensagem que é só o número da
+versão — algo como `25.0.2`, sem nenhuma explicação. O `build.bat jdk` instala
+um JDK 21 dentro da pasta do projeto, sem tocar no Android Studio nem no Java
+do sistema.
 
-O APK de `debug` (gerado por `build.bat` sem argumento) também instala, mas
-usa a chave automática do Android Studio, tem o app marcado como depurável e
-instala com o nome de pacote `br.easypace.codec.debug`. Serve para testar
-rápido; para o dia a dia, prefira `build.bat apk`.
+</details>
 
----
+<details>
+<summary><b>Todos os comandos do <code>build.bat</code></b></summary>
 
-## Como usar
+| comando | o que faz |
+|---|---|
+| `build.bat` | APK de teste (debug), sem precisar de chave |
+| `build.bat apk` | APK final assinado em `dist\` |
+| `build.bat keystore` | cria sua chave de assinatura (uma vez só) |
+| `build.bat jdk` | baixa um JDK 21 compatível |
+| `build.bat bump` | soma 1 no `versionCode` |
+| `build.bat test` | roda os testes automatizados |
+| `build.bat lint` | análise estática do Android |
+| `build.bat reset` | mata daemons e limpa caches do Gradle |
+| `build.bat diag` | build verboso + log real do daemon |
+| `build.bat clean` | apaga tudo que foi compilado |
+| `build.bat install` | instala pelo cabo (esse precisa de depuração USB) |
 
-1. Abra o app e toque em **CONCEDER PERMISSÕES** (localização, atividade física
-   e notificações).
-2. Ajuste a meta com os botões `-10 / -5 / +5 / +10` (segundos por km).
-3. Toque em **INICIAR**. O app fica ~8 s calibrando ("CALIBRANDO SENSORES") e
-   depois começa a avisar.
-4. Pode apagar a tela e guardar o celular: o monitor roda num *foreground
-   service* com notificação persistente, e a notificação tem um botão **PARAR**.
+O script acha sozinho o JDK e o Android SDK, escreve o `local.properties`,
+baixa o `gradle-wrapper.jar` se faltar, e nomeia o APK com versão e data.
 
----
+</details>
+
+## Usar
+
+1. Toque em **CONCEDER PERMISSÕES** — localização, atividade física, notificações.
+2. Ajuste a meta com `-10 / -5 / +5 / +10` (segundos por km).
+3. **INICIAR**. O app calibra por ~8 s e começa a avisar.
+4. Pode apagar a tela e guardar o celular. O monitor roda num *foreground
+   service*, e a notificação tem um botão **PARAR**.
 
 ## Como ele mede o pace
 
-O GPS entrega **1 leitura por segundo** — sozinho, ele avisaria tarde demais.
-Por isso o EasyPace funde duas fontes:
+O GPS entrega só **uma leitura por segundo** — sozinho, avisaria tarde demais.
+O EasyPace funde duas fontes: o **GPS** dá a velocidade verdadeira, e a
+**cadência** (sensor de passos, ou picos do acelerômetro) reage em ~300 ms e
+preenche o intervalo entre fixes. Enquanto você corre, o app compara as duas e
+aprende o seu comprimento de passada — é isso que mantém a medição viva quando
+o sinal cai. O motor recalcula tudo **20 vezes por segundo**.
 
-- **GPS** (`FusedLocationProvider`): dá a velocidade verdadeira.
-- **Cadência** (sensor de passos, ou picos do acelerômetro): reage em ~300 ms.
+Mas mostrar `1000 / velocidade agora` não funciona. Pace é uma hipérbole: o
+mesmo errinho de velocidade vira um erro de pace muito maior quanto mais
+devagar você vai. Correndo a 3,3 m/s, um erro de 0,1 m/s desloca o pace em
+9 s/km; **andando** a 1,4 m/s, o mesmo erro desloca **51 s/km**. Duas defesas:
+**mediana dos últimos 5 fixes** (contra os picos de multipath perto de prédios)
+e uma **janela deslizante de 12 s** (pace = distância da janela ÷ tempo da
+janela).
 
-Enquanto você corre, o app compara as duas e **aprende o seu comprimento de
-passada**. Entre um fix de GPS e o próximo, a cadência preenche o intervalo.
-O motor recalcula tudo **20 vezes por segundo** (`Config.TICK_HZ`).
+<details>
+<summary><b>Quanto isso melhorou, em números</b></summary>
 
-### Por que o número fica parado
-
-Mostrar `1000 / velocidade agora` não funciona. Pace é uma hipérbole: a
-derivada é `-1000/v²`, então o mesmo errinho de velocidade vira um erro de
-pace muito maior quanto mais devagar você vai. Correndo a 3,3 m/s, um erro de
-0,1 m/s desloca o pace em 9 s/km; **andando** a 1,4 m/s, o mesmo erro desloca
-**51 s/km**. O ruído não aumenta — a amplificação é que é maior.
-
-Duas defesas:
-
-1. **Mediana dos últimos 5 fixes de GPS.** Perto de prédios o GPS solta picos
-   isolados que chegam a dobrar a velocidade. Uma média absorve o pico e passa
-   a mentir; a mediana o descarta. Sem isso, com picos a cada 20 s, o app
-   reporta você ~8 s/km mais *rápido* do que está — erro sistemático, não
-   tremor.
-2. **Janela deslizante de 12 s.** O pace é a distância percorrida na janela
-   dividida pelo tempo dela, não a velocidade instantânea. Integrar mata o
-   ruído.
-
-Medido em simulação (corrida a 5:00/km, GPS com ruído e picos):
+Simulação de corrida a 5:00/km, com ruído de GPS e um pico de multipath a cada
+20 s:
 
 | | desvio do pace | erro médio |
 |---|---|---|
@@ -149,30 +133,30 @@ Medido em simulação (corrida a 5:00/km, GPS com ruído e picos):
 | só janela | 9,2 s/km | −13,9 s/km |
 | **as duas (atual)** | **5,4 s/km** | **−1,0 s/km** |
 
-Andando a 12:00/km, o desvio cai de 53 s/km para 24 s/km.
+Repare que a janela sozinha **piora** o viés: ela integra os picos em vez de
+descartá-los. Só a mediana os remove. Andando a 12:00/km, o desvio cai de
+53 s/km para 24 s/km.
 
 O custo é atraso: a janela de 12 s reconhece uma mudança real de ritmo em ~9 s
-(com 8 s seriam 7 s; com 20 s, 12 s). Ajustável em **AJUSTES → janela do
-pace**, sem recompilar.
+(com 8 s seriam 7 s; com 20 s, 12 s). Ajustável em **AJUSTES → janela do pace**.
 
 A tela também é redesenhada só 4x por segundo, embora o motor continue em
-20 Hz — um dígito trocando 20 vezes por segundo parece instável mesmo quando a
-medição está boa.
+20 Hz — um dígito trocando vinte vezes por segundo parece instável mesmo com a
+medição boa.
 
-Para não ficar alternando alerta/meta na fronteira, há três amortecedores:
+Contra alternância na fronteira da meta há três amortecedores: **banda morta**
+(±8 s/km), **histerese** (sair exige mais do que voltar) e **tempo mínimo de
+confirmação** (2,5 s).
 
-1. **banda morta** (`toleranceSecPerKm`, padrão ±8 s/km);
-2. **histerese** (`hysteresisSecPerKm`): depois de sair da faixa é preciso
-   voltar mais para dentro do que o ponto de saída;
-3. **tempo mínimo de confirmação** (`minStateDwellMs`, padrão 2,5 s).
+</details>
 
----
+A matemática completa está em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
 ## Onde mexer
 
 | quero mudar... | arquivo |
 |---|---|
-| tolerância, **janela do pace**, filtros, prazos dos bipes | `core/Config.kt` |
+| tolerância, janela do pace, filtros, prazos dos bipes | `core/Config.kt` |
 | o desenho dos sons (frequências, duração, timbre) | `audio/CodecSounds.kt` |
 | quando cada som toca | `audio/AlertPolicy.kt` |
 | a lógica de pace e a máquina de estados | `core/PaceEngine.kt` |
@@ -181,57 +165,48 @@ Para não ficar alternando alerta/meta na fronteira, há três amortecedores:
 | molduras, scanlines, botões | `ui/components/CodecUi.kt` |
 | ícone | `res/drawable/ic_launcher_foreground.xml` |
 
-Detalhes em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
-
----
-
-## Testes
-
 `build.bat test` roda testes de JVM (sem celular) que simulam uma corrida
-inteira com relógio falso: reconhecimento do ritmo, alertas de acelerar e
-desacelerar, histerese, integração de distância, cadência sem GPS, e a política
-de repetição dos sons.
+inteira com relógio falso: reconhecimento do ritmo, alertas nos dois sentidos,
+histerese, integração de distância, cadência sem GPS, estabilidade do pace sob
+ruído, e a política de repetição dos sons.
 
----
+## Limitações conhecidas
 
-## Publicando este repositório
+- Precisa de **céu aberto** para o GPS. Em esteira o app cai no modo cadência,
+  que depende do comprimento de passada aprendido — calibre uma vez na rua antes.
+- Alguns fabricantes (Xiaomi, Samsung, Motorola) matam serviços em segundo
+  plano. Se o app parar sozinho, tire o EasyPace da otimização de bateria.
+- O APK de `release` só é assinado se existir um `keystore.properties`. Sem
+  ele, o Android recusa a instalação.
 
-O que o Git envia são os **47 arquivos de fonte** — cerca de 280 KB no total.
-Fica de fora, por `.gitignore`:
+<details>
+<summary><b>O que fica fora do Git</b></summary>
+
+O repositório tem só o código-fonte — cerca de 280 KB. Ficam de fora, por
+`.gitignore`:
 
 | não vai | por quê |
 |---|---|
 | `easypace.jks`, `keystore.properties` | a chave de assinatura e a senha dela |
-| `local.properties` | tem o caminho do SDK com o seu nome de usuário |
+| `local.properties` | tem o caminho do SDK com o nome de usuário da máquina |
 | `dist/`, `build/`, `app/build/` | APKs e artefatos gerados |
 | `tools/` | o JDK de ~330 MB baixado pelo `build.bat` |
 | `.gradle/`, `.kotlin/`, `.idea/` | caches de ferramenta e config de IDE |
 
-Quem clonar o repositório consegue compilar: rode `build.bat`, que recria o
-`local.properties` sozinho a partir do SDK da máquina dele. Para gerar um APK
-assinado, cada pessoa cria a **própria** chave com `build.bat keystore` — o
-`keystore.properties.example` documenta o formato.
+**A chave de assinatura nunca deve ser versionada.** Ela *é* a identidade do
+app: quem a tiver pode publicar atualizações que o Android aceita como suas. Se
+vazar num commit, apagar o arquivo depois não resolve — o conteúdo continua no
+histórico, e o certo é gerar uma chave nova.
+
+Quem clonar consegue compilar: `build.bat` recria o `local.properties` a partir
+do SDK da máquina, e cada pessoa cria a **própria** chave com
+`build.bat keystore` (o formato está em `keystore.properties.example`).
 
 O `.gitattributes` fixa os finais de linha: `.bat` sempre CRLF (senão o
 `cmd.exe` engasga) e `gradlew` sempre LF (senão não roda em Linux/macOS).
-Sem isso, um clone em outra máquina pode quebrar os scripts sem motivo
-aparente.
 
----
+</details>
 
 ## Licença
 
-MIT — veja [LICENSE](LICENSE). Troque `SEU_USUARIO_GITHUB` no arquivo pelo seu
-usuário antes do primeiro push.
-
----
-
-## Limitações conhecidas
-
-- Precisa de **céu aberto** para o GPS. Em esteira/indoor o app cai no modo
-  cadência, que depende do comprimento de passada aprendido — calibre uma vez
-  correndo na rua antes.
-- Alguns fabricantes (Xiaomi, Samsung, Motorola) matam serviços em segundo
-  plano. Se o app parar sozinho, tire o EasyPace da otimização de bateria.
-- O APK de `release` só é assinado se existir um `keystore.properties`
-  (criado por `build.bat keystore`). Sem ele, o Android recusa a instalação.
+[MIT](LICENSE) — use, modifique e distribua à vontade.
